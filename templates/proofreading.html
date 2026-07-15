@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-header">
+    <h2><i class="fas fa-spell-check"></i> Proofreading Assistant</h2>
+    <p>Get AI‑powered suggestions to improve spelling, grammar, and academic style.</p>
+</div>
+
+<div class="proofreading-layout">
+    <div class="editor-container card">
+        <div class="editor-header">
+            <h3><i class="fas fa-edit"></i> Your Document</h3>
+            <div class="upload-area">
+                <label for="file-upload-proof" class="btn btn-upload btn-sm"><i class="fas fa-cloud-upload-alt"></i> Upload</label>
+                <input type="file" id="file-upload-proof" accept=".txt,.docx,.pdf" style="display:none;">
+                <span id="upload-status-proof" class="upload-status"></span>
+            </div>
+        </div>
+        <textarea id="editor-text-proof" rows="15" placeholder="Write or paste your text here...">{{ editor_text }}</textarea>
+        <div style="margin-top: 1rem;">
+            <button id="proofread-btn" class="btn btn-primary"><i class="fas fa-wand-magic"></i> Proofread Document</button>
+        </div>
+    </div>
+
+    <div class="proofreading-result card" id="proofreading-result" style="display: none;">
+        <h3><i class="fas fa-check-circle" style="color:#6AB04C;"></i> Revised Version</h3>
+        <div class="diff-stats" id="diff-stats"></div>
+        <div class="diff-controls">
+            <button id="toggle-original-btn" class="btn btn-secondary btn-sm">Show Original</button>
+        </div>
+        <div id="diff-display" style="background: #fcf9f5; padding: 1rem; border-radius: 16px; border: 1px solid #e8e2d7; min-height: 200px; max-height: 400px; overflow-y: auto; font-family: monospace; font-size: 0.9rem; line-height: 1.5;"></div>
+        <div id="original-text-display" style="display: none; white-space: pre-wrap; background: #fcf9f5; padding: 1rem; border-radius: 16px; border: 1px solid #e8e2d7; margin-top: 1rem; min-height: 100px; max-height: 400px; overflow-y: auto; color: #888;"></div>
+        <div style="margin-top: 1rem;">
+            <button id="apply-proofreading" class="btn btn-success"><i class="fas fa-check"></i> Apply Changes</button>
+            <button id="discard-proofreading" class="btn btn-secondary">Discard</button>
+        </div>
+    </div>
+</div>
+{% endblock %}

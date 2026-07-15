@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="home-container">
+    <div class="hero">
+        <h2>Write with confidence. <br>Cite with precision.</h2>
+        <p class="hero-sub">
+            CiteFlow AI helps you draft academic documents with real‑time citation suggestions<br>
+            and intelligent proofreading – all in one place.
+        </p>
+        <div class="hero-actions">
+            <a href="{{ url_for('citation_mode') }}" class="btn btn-primary btn-lg">Start Citing</a>
+            <a href="{{ url_for('proofreading_mode') }}" class="btn btn-success btn-lg">Start Proofreading</a>
+        </div>
+    </div>
+
+    <div class="features">
+        <div class="feature-card card">
+            <i class="fas fa-quote-right" style="color:#FF6B81; font-size:2.5rem;"></i>
+            <h3>Citation Assistant</h3>
+            <p>Extract keywords from your paragraphs, fetch real academic papers from Crossref, and insert citations with a single click. Supports IEEE, APA, and Harvard styles.</p>
+        </div>
+        <div class="feature-card card">
+            <i class="fas fa-spell-check" style="color:#FF9F43; font-size:2.5rem;"></i>
+            <h3>Proofreading Assistant</h3>
+            <p>Let AI proofread your entire document. It corrects grammar, spelling, and suggests style improvements to make your writing more academic and clear.</p>
+        </div>
+        <div class="feature-card card">
+            <i class="fas fa-file-word" style="color:#54A0FF; font-size:2.5rem;"></i>
+            <h3>Export to Word</h3>
+            <p>Download your document as a .docx file. In Citation mode, the bibliography is automatically appended at the end.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

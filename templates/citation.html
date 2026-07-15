@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-header">
+    <h2><i class="fas fa-quote-right"></i> Citation Assistant</h2>
+    <p>Select a paragraph, fetch a relevant paper, and insert the citation.</p>
+</div>
+
+<div class="main-content">
+    <!-- Left Column: Editor & Bibliography -->
+    <div class="editor-column">
+        <div class="editor-container card">
+            <div class="editor-header">
+                <h3><i class="fas fa-edit"></i> Document Editor</h3>
+                <div class="upload-area">
+                    <label for="file-upload" class="btn btn-upload btn-sm"><i class="fas fa-cloud-upload-alt"></i> Upload</label>
+                    <input type="file" id="file-upload" accept=".txt,.docx,.pdf" style="display:none;">
+                    <span id="upload-status" class="upload-status"></span>
+                </div>
+            </div>
+            <textarea id="editor-text" rows="15" placeholder="Write or paste your academic draft here...">{{ editor_text }}</textarea>
+        </div>
+
+        <div class="bibliography-container card">
+            <h3><i class="fas fa-book"></i> Generated Bibliography</h3>
+            <div id="bibliography-list">
+                {% if bibliography %}
+                    <ul>
+                    {% for entry in bibliography %}
+                        <li>{{ entry.reference }}</li>
+                    {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="info">No citations inserted yet. Insert a citation to populate your bibliography.</p>
+                {% endif %}
+            </div>
+            <div class="bib-actions">
+                <form action="{{ url_for('set_style') }}" method="post" class="style-form">
+                    <label for="style-select">Citation Style</label>
+                    <select name="citation_style" id="style-select" onchange="this.form.submit()">
+                        <option value="IEEE" {% if citation_style == 'IEEE' %}selected{% endif %}>IEEE</option>
+                        <option value="APA" {% if citation_style == 'APA' %}selected{% endif %}>APA</option>
+                        <option value="Harvard" {% if citation_style == 'Harvard' %}selected{% endif %}>Harvard</option>
+                    </select>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Recommendation Panel -->
+    <div class="recommendation-column card">
+        <h3><i class="fas fa-search"></i> Live Recommendation</h3>
+        <div class="recommendation-controls">
+            <label for="paragraph-select">Select a paragraph to analyze:</label>
+            <select id="paragraph-select">
+                {% for idx in citable_indices %}
+                    <option value="{{ idx }}">
+                        Paragraph {{ loop.index }}: {{ paragraphs[idx][:60] }}{% if paragraphs[idx]|length > 60 %}...{% endif %}
+                    </option>
+                {% endfor %}
+            </select>
+            <button id="fetch-btn" class="btn btn-primary"><i class="fas fa-rocket"></i> Fetch Relevant Paper</button>
+            <div id="fetch-status" class="status-message"></div>
+        </div>
+
+        <!-- Paper Card -->
+        <div id="paper-card" style="display: {% if fetched_paper %}block{% else %}none{% endif %};">
+            {% if fetched_paper %}
+                <div class="paper-card-content">
+                    <h4>{{ fetched_paper.title }}</h4>
+                    <p class="authors"><i class="fas fa-user"></i> {{ fetched_paper.authors|join(', ', attribute='name') }}</p>
+                    <p><i class="fas fa-university"></i> Venue: {{ fetched_paper.venue }} &nbsp;|&nbsp; Year: {{ fetched_paper.year }}</p>
+                    <p class="abstract">{{ fetched_paper.abstract[:250] }}{% if fetched_paper.abstract|length > 250 %}...{% endif %}</p>
+                    {% if fetched_paper.url %}
+                        <a href="{{ fetched_paper.url }}" target="_blank" class="paper-link"><i class="fas fa-external-link-alt"></i> View on Crossref</a>
+                    {% endif %}
+                    <hr>
+                    <div class="insertion-controls">
+                        <label for="insertion-mode">Inline citation format:</label>
+                        <select id="insertion-mode">
+                            <option value="Only Citation">Only Citation</option>
+                            <option value="Insert Quote + Citation">Insert Quote + Citation</option>
+                        </select>
+                        <button id="insert-btn" class="btn btn-success"><i class="fas fa-plus-circle"></i> Insert Citation</button>
+                    </div>
+                </div>
+            {% else %}
+                <div class="paper-card-empty">
+                    <p>No paper fetched yet. Select a paragraph and click "Fetch Relevant Paper".</p>
+                </div>
+            {% endif %}
+        </div>
+
+        {% if fetch_error %}
+            <div class="error-message">{{ fetch_error }}</div>
+        {% endif %}
+        {% if active_query %}
+            <div class="query-info">Last query: <code>{{ active_query }}</code></div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

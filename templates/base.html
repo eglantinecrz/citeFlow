@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CiteFlow AI</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Caveat:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Decorative blobs -->
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+        <div class="blob blob-4"></div>
+
+        <!-- Navigation -->
+        <nav class="navbar">
+            <div class="nav-brand">
+                <h1>CiteFlow AI</h1>
+                <span class="tagline">your creative assistant</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('home') }}" class="{% if request.endpoint == 'home' %}active{% endif %}">Home</a></li>
+                <li><a href="{{ url_for('citation_mode') }}" class="{% if request.endpoint == 'citation_mode' %}active{% endif %}">Citation Assistant</a></li>
+                <li><a href="{{ url_for('proofreading_mode') }}" class="{% if request.endpoint == 'proofreading_mode' %}active{% endif %}">Proofreading Assistant</a></li>
+            </ul>
+            <div class="nav-actions">
+                <form action="{{ url_for('clear_bibliography') }}" method="post" style="display:inline;">
+                    <button type="submit" class="btn btn-secondary btn-sm"><i class="fas fa-trash-alt"></i> Clear Bibliography</button>
+                </form>
+                <a href="{{ url_for('download_document') }}" class="btn btn-download btn-sm"><i class="fas fa-file-word"></i> Download</a>
+            </div>
+        </nav>
+
+        <!-- Page content -->
+        <main>
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
