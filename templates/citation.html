@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="page-header">
-    <h2><i class="fas fa-quote-right"></i> Citation Assistant</h2>
+    <h2><i class="fas fa-quote-right" style="color:#F0532A;"></i> Citation Assistant</h2>
     <p>Select a paragraph, fetch a relevant paper, and insert the citation.</p>
 </div>
 
@@ -11,7 +11,7 @@
     <div class="editor-column">
         <div class="editor-container card">
             <div class="editor-header">
-                <h3><i class="fas fa-edit"></i> Document Editor</h3>
+                <h3><i class="fas fa-edit" style="color:#F6A9C0;"></i> Document Editor</h3>
                 <div class="upload-area">
                     <label for="file-upload" class="btn btn-upload btn-sm"><i class="fas fa-cloud-upload-alt"></i> Upload</label>
                     <input type="file" id="file-upload" accept=".txt,.docx,.pdf" style="display:none;">
@@ -22,7 +22,7 @@
         </div>
 
         <div class="bibliography-container card">
-            <h3><i class="fas fa-book"></i> Generated Bibliography</h3>
+            <h3><i class="fas fa-book" style="color:#4E7FC4;"></i> Generated Bibliography</h3>
             <div id="bibliography-list">
                 {% if bibliography %}
                     <ul>
@@ -34,9 +34,15 @@
                     <p class="info">No citations inserted yet. Insert a citation to populate your bibliography.</p>
                 {% endif %}
             </div>
-            <div class="bib-actions">
+            <div class="bib-actions" style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem;">
+                
+                <form action="{{ url_for('download_document') }}" method="POST" onsubmit="document.getElementById('hidden-text-citation').value = document.getElementById('editor-text').value;">
+                    <input type="hidden" name="current_text" id="hidden-text-citation">
+                    <button type="submit" class="btn btn-download btn-sm"><i class="fas fa-file-word"></i> Download DOCX</button>
+                </form>
+
                 <form action="{{ url_for('set_style') }}" method="post" class="style-form">
-                    <label for="style-select">Citation Style</label>
+                    <label for="style-select">Style</label>
                     <select name="citation_style" id="style-select" onchange="this.form.submit()">
                         <option value="IEEE" {% if citation_style == 'IEEE' %}selected{% endif %}>IEEE</option>
                         <option value="APA" {% if citation_style == 'APA' %}selected{% endif %}>APA</option>
@@ -49,7 +55,7 @@
 
     <!-- Right Column: Recommendation Panel -->
     <div class="recommendation-column card">
-        <h3><i class="fas fa-search"></i> Live Recommendation</h3>
+        <h3><i class="fas fa-search" style="color:#9B93E8;"></i> Live Recommendation</h3>
         <div class="recommendation-controls">
             <label for="paragraph-select">Select a paragraph to analyze:</label>
             <select id="paragraph-select">
@@ -59,34 +65,35 @@
                     </option>
                 {% endfor %}
             </select>
-            <button id="fetch-btn" class="btn btn-primary"><i class="fas fa-rocket"></i> Fetch Relevant Paper</button>
+            <button id="fetch-btn" class="btn btn-primary"><i class="fas fa-rocket"></i> Fetch Papers</button>
             <div id="fetch-status" class="status-message"></div>
         </div>
 
-        <!-- Paper Card -->
-        <div id="paper-card" style="display: {% if fetched_paper %}block{% else %}none{% endif %};">
-            {% if fetched_paper %}
-                <div class="paper-card-content">
-                    <h4>{{ fetched_paper.title }}</h4>
-                    <p class="authors"><i class="fas fa-user"></i> {{ fetched_paper.authors|join(', ', attribute='name') }}</p>
-                    <p><i class="fas fa-university"></i> Venue: {{ fetched_paper.venue }} &nbsp;|&nbsp; Year: {{ fetched_paper.year }}</p>
-                    <p class="abstract">{{ fetched_paper.abstract[:250] }}{% if fetched_paper.abstract|length > 250 %}...{% endif %}</p>
-                    {% if fetched_paper.url %}
-                        <a href="{{ fetched_paper.url }}" target="_blank" class="paper-link"><i class="fas fa-external-link-alt"></i> View on Crossref</a>
+        <!-- Papers Container -->
+        <div id="paper-card" style="display: {% if fetched_papers %}block{% else %}none{% endif %}; max-height: 600px; overflow-y: auto; padding-right: 10px;">
+            {% if fetched_papers %}
+                {% for paper in fetched_papers %}
+                <div class="paper-card-content" style="margin-bottom: 1.5rem; border-bottom: 2px solid #e8e2d7; padding-bottom: 1rem;">
+                    <h4>{{ paper.title }}</h4>
+                    <p class="authors"><i class="fas fa-user"></i> {{ paper.authors|join(', ', attribute='name') }}</p>
+                    <p><i class="fas fa-university"></i> Venue: {{ paper.venue }} &nbsp;|&nbsp; Year: {{ paper.year }}</p>
+                    <p class="abstract">{{ paper.abstract[:200] }}{% if paper.abstract|length > 200 %}...{% endif %}</p>
+                    {% if paper.url %}
+                        <a href="{{ paper.url }}" target="_blank" class="paper-link"><i class="fas fa-external-link-alt"></i> View on Crossref</a>
                     {% endif %}
-                    <hr>
-                    <div class="insertion-controls">
-                        <label for="insertion-mode">Inline citation format:</label>
-                        <select id="insertion-mode">
+                    <div class="insertion-controls" style="margin-top: 0.8rem;">
+                        <label>Format:</label>
+                        <select class="insertion-mode" data-index="{{ loop.index0 }}">
                             <option value="Only Citation">Only Citation</option>
-                            <option value="Insert Quote + Citation">Insert Quote + Citation</option>
+                            <option value="Insert Quote + Citation">Quote + Citation</option>
                         </select>
-                        <button id="insert-btn" class="btn btn-success"><i class="fas fa-plus-circle"></i> Insert Citation</button>
+                        <button class="btn btn-success insert-btn" data-index="{{ loop.index0 }}"><i class="fas fa-plus-circle"></i> Insert</button>
                     </div>
                 </div>
+                {% endfor %}
             {% else %}
                 <div class="paper-card-empty">
-                    <p>No paper fetched yet. Select a paragraph and click "Fetch Relevant Paper".</p>
+                    <p>No paper fetched yet. Select a paragraph and click "Fetch Papers".</p>
                 </div>
             {% endif %}
         </div>
